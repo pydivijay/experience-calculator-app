@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { saveAs } from "file-saver";
 
 const ExperienceCalculator = () => {
   const [experiences, setExperiences] = useState([]);
@@ -129,6 +132,54 @@ const ExperienceCalculator = () => {
     return `${totalYears} years, ${totalMonths} months, ${totalDays} days`;
   };
 
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+
+    // Title
+    doc.setFontSize(18);
+    doc.text("Experience Report", 14, 20);
+
+    // Define table columns
+    const tableColumn = [
+      "Company Name",
+      "Start Date",
+      "End Date",
+      "Total Experience",
+    ];
+    const tableRows = [];
+
+    // Populate table data
+    experiences.forEach((exp) => {
+      const rowData = [
+        exp.companyName,
+        exp.startDate,
+        exp.endDate,
+        exp.totalExperience,
+      ];
+      tableRows.push(rowData);
+    });
+
+    // Add table
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      theme: "striped",
+    });
+
+    // Add Overall Experience at the bottom
+    const overallExperience = calculateOverallExperience();
+    doc.setFontSize(14);
+    doc.text(
+      `Overall Experience: ${overallExperience}`,
+      14,
+      doc.lastAutoTable.finalY + 10
+    );
+
+    // Save PDF
+    doc.save("Experience_Report.pdf");
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 to-green-400 p-8">
       <Card className="w-full max-w-4xl p-8 shadow-2xl bg-white rounded-3xl">
@@ -242,6 +293,14 @@ const ExperienceCalculator = () => {
               Overall Experience: {calculateOverallExperience()}
             </div>
           )}
+          <div className="mt-6 flex justify-around">
+            <Button
+              onClick={downloadPDF}
+              className="bg-purple-600 hover:bg-purple-800 text-white px-6 py-3 rounded-xl shadow-md"
+            >
+              Download PDF
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
