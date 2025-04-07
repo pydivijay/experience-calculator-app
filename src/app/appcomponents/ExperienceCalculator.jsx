@@ -31,7 +31,7 @@ const ExperienceCalculator = () => {
     // Adjust for negative months or days
     if (days < 0) {
       months--;
-      days += new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate(); // Get last day of the previous month
+      days += new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
     }
 
     if (months < 0) {
@@ -95,15 +95,13 @@ const ExperienceCalculator = () => {
       const start = new Date(exp.startDate);
       const end = new Date(exp.endDate);
 
-      // Calculate the difference in years, months, and days
       let years = end.getFullYear() - start.getFullYear();
       let months = end.getMonth() - start.getMonth();
       let days = end.getDate() - start.getDate();
 
-      // Adjust for negative days or months
       if (days < 0) {
         months--;
-        days += new Date(end.getFullYear(), end.getMonth(), 0).getDate(); // Get the last day of the previous month
+        days += new Date(end.getFullYear(), end.getMonth(), 0).getDate();
       }
 
       if (months < 0) {
@@ -111,18 +109,15 @@ const ExperienceCalculator = () => {
         months += 12;
       }
 
-      // Accumulate the total years, months, and days
       totalYears += years;
       totalMonths += months;
       totalDays += days;
 
-      // If totalDays exceeds 30, adjust totalMonths and totalDays
       if (totalDays >= 30) {
         totalMonths++;
         totalDays -= 30;
       }
 
-      // If totalMonths exceeds 12, adjust totalYears and totalMonths
       if (totalMonths >= 12) {
         totalYears++;
         totalMonths -= 12;
@@ -135,11 +130,9 @@ const ExperienceCalculator = () => {
   const downloadPDF = () => {
     const doc = new jsPDF();
 
-    // Title
     doc.setFontSize(18);
     doc.text("Experience Report", 14, 20);
 
-    // Define table columns
     const tableColumn = [
       "Company Name",
       "Start Date",
@@ -148,7 +141,6 @@ const ExperienceCalculator = () => {
     ];
     const tableRows = [];
 
-    // Populate table data
     experiences.forEach((exp) => {
       const rowData = [
         exp.companyName,
@@ -159,7 +151,6 @@ const ExperienceCalculator = () => {
       tableRows.push(rowData);
     });
 
-    // Add table
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
@@ -167,7 +158,6 @@ const ExperienceCalculator = () => {
       theme: "striped",
     });
 
-    // Add Overall Experience at the bottom
     const overallExperience = calculateOverallExperience();
     doc.setFontSize(14);
     doc.text(
@@ -176,13 +166,12 @@ const ExperienceCalculator = () => {
       doc.lastAutoTable.finalY + 10
     );
 
-    // Save PDF
     doc.save("Experience_Report.pdf");
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 to-green-400 p-8">
-      <Card className="w-full max-w-4xl p-8 shadow-2xl bg-white rounded-3xl">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 to-green-400 p-4 sm:p-8">
+      <Card className="w-full max-w-4xl p-4 sm:p-8 shadow-2xl bg-white rounded-3xl">
         <div className="flex justify-center mb-4">
           <Image
             src="/VijayLogo.jpg"
@@ -193,7 +182,7 @@ const ExperienceCalculator = () => {
           />
         </div>
         <CardContent>
-          <h2 className="text-3xl font-extrabold mb-6 text-center text-blue-800">
+          <h2 className="text-2xl sm:text-3xl font-extrabold mb-6 text-center text-blue-800">
             Experience Calculator
           </h2>
           <div className="mb-6 bg-gradient-to-r from-gray-100 to-gray-300 p-6 rounded-2xl shadow-xl">
@@ -227,7 +216,7 @@ const ExperienceCalculator = () => {
               <p className="text-red-500 text-sm">{errors.date}</p>
             )}
 
-            <div className="flex justify-around">
+            <div className="flex flex-col sm:flex-row justify-around gap-2">
               <Button
                 onClick={addExperience}
                 className="bg-green-600 hover:bg-green-800 text-white px-6 py-3 rounded-xl shadow-md"
@@ -248,46 +237,51 @@ const ExperienceCalculator = () => {
               </Button>
             </div>
           </div>
-          <table className="w-full border-collapse border border-gray-300 shadow-lg rounded-xl overflow-hidden">
-            <thead>
-              <tr className="bg-blue-700 text-white text-lg">
-                <th className="border border-gray-300 p-4">Company Name</th>
-                <th className="border border-gray-300 p-4">Start Date</th>
-                <th className="border border-gray-300 p-4">End Date</th>
-                <th className="border border-gray-300 p-4">Total Experience</th>
-                <th className="border border-gray-300 p-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {experiences.map((exp, index) => (
-                <tr
-                  key={index}
-                  className="border border-gray-300 bg-gray-100 hover:bg-gray-200"
-                >
-                  <td className="border border-gray-300 p-4 text-center">
-                    {exp.companyName}
-                  </td>
-                  <td className="border border-gray-300 p-4 text-center">
-                    {exp.startDate}
-                  </td>
-                  <td className="border border-gray-300 p-4 text-center">
-                    {exp.endDate}
-                  </td>
-                  <td className="border border-gray-300 p-4 text-center">
-                    {exp.totalExperience}
-                  </td>
-                  <td className="border border-gray-300 p-4 text-center">
-                    <Button
-                      onClick={() => removeExperience(index)}
-                      className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-xl shadow-md"
-                    >
-                      Delete
-                    </Button>
-                  </td>
+          
+          {/* Added responsive wrapper */}
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300 shadow-lg rounded-xl overflow-hidden min-w-[640px]">
+              <thead>
+                <tr className="bg-blue-700 text-white text-lg">
+                  <th className="border border-gray-300 p-4 whitespace-nowrap">Company Name</th>
+                  <th className="border border-gray-300 p-4 whitespace-nowrap">Start Date</th>
+                  <th className="border border-gray-300 p-4 whitespace-nowrap">End Date</th>
+                  <th className="border border-gray-300 p-4 whitespace-nowrap">Total Experience</th>
+                  <th className="border border-gray-300 p-4 whitespace-nowrap">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {experiences.map((exp, index) => (
+                  <tr
+                    key={index}
+                    className="border border-gray-300 bg-gray-100 hover:bg-gray-200"
+                  >
+                    <td className="border border-gray-300 p-4 text-center">
+                      {exp.companyName}
+                    </td>
+                    <td className="border border-gray-300 p-4 text-center">
+                      {exp.startDate}
+                    </td>
+                    <td className="border border-gray-300 p-4 text-center">
+                      {exp.endDate}
+                    </td>
+                    <td className="border border-gray-300 p-4 text-center">
+                      {exp.totalExperience}
+                    </td>
+                    <td className="border border-gray-300 p-4 text-center">
+                      <Button
+                        onClick={() => removeExperience(index)}
+                        className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-xl shadow-md"
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
           {experiences.length > 0 && (
             <div className="mt-6 p-6 text-center bg-blue-100 rounded-xl text-blue-900 font-bold shadow-lg">
               Overall Experience: {calculateOverallExperience()}
